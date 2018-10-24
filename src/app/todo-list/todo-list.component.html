@@ -1,0 +1,173 @@
+<div class="container">
+
+  <!--Search Menu -->
+  <div class="row" style="margin-top:12px;">
+    <div class="col-md-8">
+      <input type="text"
+             class="form-control"
+             style="width: 100%;"
+             placeholder="Search Todo Collections...">
+    </div>
+
+    <div class="col-md-4">
+      <button type="button"
+              (click)="newTodoCollection()"
+              class="btn btn-info pull-right"
+              style="margin-left: 12px;">
+        <i class="fa fa-plus"></i> New TodoCollection
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Below Headers -->
+  <div class="row" style="margin-top: 28px">
+    <!-- Collection Pane; -->
+    <div class="col-md-3">
+      <br>
+      <div class="list-group list-group-flush">
+
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid &&  newTodoCollection(); f.innerText = ''" class="newTodoCollection-form">
+          <div class="row">
+            <div class="col-md-10">
+              <input type="text"
+                     id="collectionName"
+                     name="collectionName"
+                     class="form-control"
+                     style="width: 100%;"
+                     placeholder="New Collection.."
+                     [(ngModel)]="model.collectionName"
+                     #name="ngModel"
+                     required minlength="2"
+                     [ngClass]="{ 'is-invalid': f.submitted && name.invalid}"
+              />
+              <!-- Validation errors -->
+              <div *ngIf="f.submitted && name.invalid" class="invalid-input">
+                <!-- Name Validation errors -->
+                <div *ngIf="name.errors?.required">*This is a required field.</div>
+                <div *ngIf="name.errors?.minlength">*Please use a minimum of 2 characters.</div>
+              </div>
+              <div><br></div>
+            </div>
+            <div class="col-md-2">
+              <button type="submit"
+                      class="btn btn-info pull-right"
+                      style="margin-left: 0px;">
+                <i class="fa fa-plus"></i>
+              </button>
+            </div>
+          </div>
+
+        </form>
+        <a class="list-group-item list-group-item-action"
+           (click)="getAllTodos()"
+           (click)="selectTodoCollection(null)"
+           [ngClass]="selectedCollectionClass(null)"
+        >
+          <i class="fa fa-book"></i>&nbsp;All
+        </a>
+        <a *ngFor="let todoCollection of todoCollectionList"
+           class="list-group-item list-group-item-action"
+           (click)="selectTodoCollection(todoCollection)"
+           [ngClass]="selectedCollectionClass(todoCollection)"
+        >
+          <i class="fa fa-pencil-square-o"></i>&nbsp;{{todoCollection.collectionName}} ({{getCollectionCount(todoCollection)}})
+          <a (click)="deleteCollection(todoCollection.id)">
+            <i class="fa fa-remove pull-right delete-button"></i>
+          </a>
+          <a>
+            <i class="fa fa-pencil pull-right edit-button">
+              <!--  (click)=""> -->&nbsp;
+            </i>
+          </a>
+
+        </a>
+      </div>
+    </div>
+
+    <!--Todos Pane-->
+    <div class="col-md-9">
+      <div class="row">
+        <div class="col-md-12">
+          <p *ngIf="this.todoList.length == 0">Start by adding your first Todo to this collection!</p>
+          Put dropdown filters here
+
+        </div>
+      </div>
+      <div class="row">
+        <!-- to do list-->
+
+        <div class="list-group list-group-flush"
+             style="width: 100%;">
+          <div class="row">
+            <div class="col-md-8">
+              <div class="dropdown">
+                <input type="text"
+                       class="form-control"
+                       placeholder="Name">
+
+
+              </div>
+
+
+              <div><br></div>
+            </div>
+            <div class="col-md-4">
+              <button type="button"
+                      [disabled]="currentCollection == null"
+                      class="btn btn-warning pull-right"
+                      style="margin-right: 16px;">
+                <i class="fa fa-plus"></i> New Todo
+              </button>
+            </div>
+          </div>
+
+          <a *ngFor="let todo of todoList"
+             class="list-group-item list-group-item-action"
+             style="width: 100%;">
+            <i *ngIf="todo.completed==true"
+              class="fa fa-check-square-o"></i>
+            <i *ngIf="todo.completed==false"
+              class="fa fa-square-o"></i>
+            {{todo.title}}
+            <button [ngClass]="completedClass(todo.completed)"
+                    (click)="todo.completed=!todo.completed"
+                    (click)="updateTodo(todo)">
+              Complete
+            </button>
+          </a>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Dropdown button
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#">Action</a>
+              <a class="dropdown-item" href="#">Another action</a>
+              <a class="dropdown-item" href="#">Something else here</a>
+            </div>
+          </div>
+
+        </div>
+        <div class="navigation">
+          <nav aria-label="...">
+            <ul class="pagination">
+              <li class="page-item">
+                <a class="page-link" href="#" tabindex="-1">Previous</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">1</a></li>
+              <li class="page-item active">
+                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">3</a></li>
+              <li class="page-item">
+                <a class="page-link" href="#">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+

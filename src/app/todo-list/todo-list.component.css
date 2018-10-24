@@ -1,0 +1,60 @@
+.invalid-input {
+  color: red;
+}
+
+.delete-button:hover{
+  color: red;
+}
+
+.edit-button:hover{
+  color: deepskyblue;
+}
+
+.btn-sm{
+  line-height: 1;
+}
+
+.navigation{
+
+  position: relative;
+  top: 40px;
+
+  left: 35%;
+}
+
+.page-item.active .page-link {
+  z-index: 1;
+  color: #fff;
+  background-color: #17a2b8;
+  border-color: #363636;
+}
+
+.page-link:hover {
+  z-index: 2;
+  color: #000;
+  text-decoration: none;
+  background-color: #e9ecef;
+  border-color: #dee2e6;
+}
+
+.page-link {
+
+  position: relative;
+  display: block;
+  padding: .5rem .75rem;
+  margin-left: -1px;
+  line-height: 1.25;
+  color: #0c0c0c;
+  background-color: #fff;
+  border: 1px solid #dee2e6;
+}
+
+.todo-selected {
+  color: #17a2b8 !important;
+  font-weight: 600;
+}
+
+.fa {
+  color: black;
+}
+

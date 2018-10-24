@@ -1,0 +1,56 @@
+<div class="container">
+  <div class="row">
+    <div class="offset-3"></div>
+    <div class="col-md-6">
+      <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && addTodo()" novalidate class="feedback-form">
+            <div class="form-group">
+              <label for="title">Title</label>
+              <input type="text"
+                     id="title"
+                     class="form-control"
+                     name="Title"
+                     placeholder="Title Here"
+                     [(ngModel)]="model.title"
+                     #name="ngModel"
+                     [ngClass]="{ 'is-invalid': f.submitted && name.invalid }"
+                     required minlength="3"/>
+              <!-- Validation errors -->
+              <div *ngIf="f.submitted && name.invalid" class="invalid-input">
+                <!-- Name Validation errors -->
+                <div *ngIf="name.errors?.required">*Title is a required field.</div>
+                <div *ngIf="name.errors?.minlength">*Please use a minimum of 3 characters.</div>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="dueDate">Title</label>
+              <input type="date"
+                    id="dueDate"
+                    class="form-control"
+                    name="DueDate"
+                    placeholder="Choose Due Date"
+                    [(ngModel)]="model.dueDate" />
+            </div>
+
+            <div class="form-group">
+              <label for="description">Description</label>
+              <textarea
+                     id="description"
+                     class="form-control"
+                     name="description"
+                     placeholder="Description Here"
+                     rows="10"
+                     [(ngModel)]="model.description">
+
+              </textarea>
+            </div>
+
+            <button type="submit" class="btn btn-info pull-right">
+              <i class="fa fa-pencil-square-o"></i>
+              <span> Add</span>
+            </button>
+      </form>
+    </div>
+    <div class="offset-3"></div>
+  </div>
+</div>
