@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import {HttpClient} from "@angular/common/http";
 import {TodoCollection} from "./model/todo-collection";
 import {Todo} from "./model/todo";
 import {TodoService} from "../shared/todo.service";
@@ -14,14 +13,13 @@ export class TodoListComponent implements OnInit {
   todoCollectionList: TodoCollection[] = [];
   todoList: Todo[] = [];
   currentCollection: TodoCollection;
-
+  currentTodo: Todo;
   completeTodoList: Todo[] = [];
   incompleteTodoList: Todo[] = [];
 
-
   model: TodoCollectionViewModel = {
     collectionName: '',
-  }
+  };
 
   constructor(private todoService: TodoService) {
   }
@@ -57,7 +55,7 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public getTodosInCollection(collectionId: number,  updateTodoList: boolean = true) {
+  public getTodosInCollection(collectionId: number) {
 
     this.todoService.getTodosInCollection(collectionId).subscribe(
       res => {
@@ -69,15 +67,18 @@ export class TodoListComponent implements OnInit {
     );
   }
 
-  public newTodoCollection() {
+  public newTodoCollection() : boolean {
     this.todoService.createNewTodoCollection(this.model).subscribe(
       res => {
         this.todoCollectionList = res;
+        return true;
       },
       err => {
-        alert("An error has occured creating a new Todo");
+        alert("An error has occured creating a new Collection");
+        return false;
       }
-    )
+    );
+    return false;
   }
 
   public deleteCollection(collectionId: number) {
@@ -127,11 +128,12 @@ export class TodoListComponent implements OnInit {
       return completed == true ? "btn btn-info pull-right btn-sm" :  "btn btn-action pull-right btn-sm";
 
   }
-  public getCollectionCount ()
-  {
-    return 9999;//this.getTodosInCollection(todoCollection.id, false).length;
-  }
 
+  public formatDate(date: Date)
+  {
+    const aDate = new Date(date);
+    return aDate.toLocaleDateString('en-ZA');
+  }
 
 }
 

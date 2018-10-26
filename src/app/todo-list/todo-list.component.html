@@ -2,19 +2,18 @@
 
   <!--Search Menu -->
   <div class="row" style="margin-top:12px;">
-    <div class="col-md-8">
+    <div class="col-md-11">
       <input type="text"
              class="form-control"
-             style="width: 100%;"
+             style="width: 98%;"
              placeholder="Search Todo Collections...">
     </div>
-
-    <div class="col-md-4">
+    <div class="col-md-1">
       <button type="button"
               (click)="newTodoCollection()"
-              class="btn btn-info pull-right"
-              style="margin-left: 12px;">
-        <i class="fa fa-plus"></i> New TodoCollection
+              class="btn btn-info pull-right">
+
+        <i class="fa fa-search"></i> Search
       </button>
 
     </div>
@@ -27,7 +26,8 @@
       <br>
       <div class="list-group list-group-flush">
 
-        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid &&  newTodoCollection(); f.innerText = ''" class="newTodoCollection-form">
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid &&  newTodoCollection() && f.resetForm();"
+              class="newTodoCollection-form">
           <div class="row">
             <div class="col-md-10">
               <input type="text"
@@ -51,8 +51,7 @@
             </div>
             <div class="col-md-2">
               <button type="submit"
-                      class="btn btn-info pull-right"
-                      style="margin-left: 0px;">
+                      class="btn btn-info pull-right">
                 <i class="fa fa-plus"></i>
               </button>
             </div>
@@ -71,7 +70,8 @@
            (click)="selectTodoCollection(todoCollection)"
            [ngClass]="selectedCollectionClass(todoCollection)"
         >
-          <i class="fa fa-pencil-square-o"></i>&nbsp;{{todoCollection.collectionName}} ({{getCollectionCount(todoCollection)}})
+          <i class="fa fa-pencil-square-o"></i>&nbsp;{{todoCollection.collectionName}}
+          ({{todoCollection.collectionCount}})
           <a (click)="deleteCollection(todoCollection.id)">
             <i class="fa fa-remove pull-right delete-button"></i>
           </a>
@@ -87,57 +87,130 @@
 
     <!--Todos Pane-->
     <div class="col-md-9">
+      <br>
       <div class="row">
         <div class="col-md-12">
-          <p *ngIf="this.todoList.length == 0">Start by adding your first Todo to this collection!</p>
-          Put dropdown filters here
 
         </div>
       </div>
+
       <div class="row">
         <!-- to do list-->
 
         <div class="list-group list-group-flush"
-             style="width: 100%;">
+             style="width: 98%;">
           <div class="row">
-            <div class="col-md-8">
+            <div class="col-md-10">
               <div class="dropdown">
                 <input type="text"
                        class="form-control"
                        placeholder="Name">
-
-
               </div>
-
-
               <div><br></div>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-2">
               <button type="button"
                       [disabled]="currentCollection == null"
-                      class="btn btn-warning pull-right"
-                      style="margin-right: 16px;">
+                      class="btn btn-warning pull-right">
                 <i class="fa fa-plus"></i> New Todo
               </button>
             </div>
           </div>
 
-          <a *ngFor="let todo of todoList"
-             class="list-group-item list-group-item-action"
-             style="width: 100%;">
-            <i *ngIf="todo.completed==true"
-              class="fa fa-check-square-o"></i>
-            <i *ngIf="todo.completed==false"
-              class="fa fa-square-o"></i>
-            {{todo.title}}
-            <button [ngClass]="completedClass(todo.completed)"
-                    (click)="todo.completed=!todo.completed"
-                    (click)="updateTodo(todo)">
-              Complete
-            </button>
-          </a>
+          <div class="row headings">
+            <h5 class="col-md-6 text-left">Title</h5>
+            <h5 class="col-md-2 text-center">Due</h5>
+            <h5 class="col-md-2 text-center">Frequency</h5>
+            <h5 class="col-md-2 text-right">Complete</h5>
+
+          </div>
+          <div class="row"
+               *ngFor="let todo of todoList">
+            <a class="list-group-item list-group-item-action"
+               style="width: 100%;"
+               >
+              <div class="row">
+                <div class="col-md-6"
+                     (click)="currentTodo = todo.id == currentTodo?.id ? null : todo"
+                >
+                  <i *ngIf="todo.completed==true"
+                     class="fa fa-check-square-o"></i>
+                  <i *ngIf="todo.completed==false"
+                     class="fa fa-square-o"></i>
+                  {{todo.title}}
+                </div>
+                <div class="col-md-2 text-center ">
+                  <span *ngIf="todo.dueDate != null"
+                        class="due-date">
+                        &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDate(todo.dueDate)}}&nbsp;&nbsp;
+                    </span>
+                </div>
+                <div class="col-md-2 text-center">
+
+                  <span *ngIf="todo.category != null"
+                        class="due-date">
+                        &nbsp;&nbsp;{{todo.category.name}}&nbsp;&nbsp;
+                  </span>
+
+                </div>
+                <div class="col-md-2">
+                  <button [ngClass]="completedClass(todo.completed)"
+                          (click)="todo.completed=!todo.completed"
+                          (click)="updateTodo(todo)"
+                          >
+                    Complete
+                  </button>
+                </div>
+              </div>
+              <div *ngIf="currentTodo?.id == todo.id"
+                   class="row">
+                <ul>
+                  <li>
+                    <input type="text"
+                           id="title"
+                           name="title"
+                           class="expanded-input"
+                           placeholder="Title"
+                           required minlength="2"
+                           [ngClass]="{ 'is-invalid': f.submitted && category.invalid}"/>
+                  </li>
+
+                  <li>
+                    <input type="text"
+                           id="category"
+                           name="category"
+                           class="expanded-input"
+                           placeholder="Category"/>
+                  </li>
+                  <li>
+                    <input type="text"
+                           id="dueDate"
+                           name="dueDate"
+                           onfocus="(this.type='date')"
+                           onblur="(this.type='text')"
+                           class="expanded-input"
+                           placeholder="Due Date"
+                           data-date-format="yyyy-MM-dd"
+
+                    />
+                  </li>
+
+                  <li>
+                    <input type="text"
+                           id="description"
+                           name="description"
+                           class="expanded-input"
+                           placeholder="Description"
+                           contenteditable="true"/>
+                  </li>
+
+                </ul>
+              </div>
+            </a>
+          </div>
           <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               Dropdown button
             </button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">

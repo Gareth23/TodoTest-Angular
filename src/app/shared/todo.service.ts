@@ -18,8 +18,7 @@ export class TodoService {
   private allTodoCollectionUrl = this.rootUrl + "/todocollection/all";
   private removeTodoCollectionUrl = this.rootUrl + "/todocollection/remove/";
   private allTodosInCollectionUrl = this.rootUrl + "/todo/incollection/";
-  private toggleCompleteStatusUrl = this.rootUrl + "/todo/togglecomplete/";
-
+  private todoCountInCollectionUrl = this.rootUrl + "/todo/count/";
 
 
   constructor(private http: HttpClient) {
@@ -57,6 +56,12 @@ export class TodoService {
 
   updateTodo(todo: Todo) : Observable<Todo[]> {
     return this.http.post<Todo[]>(this.createTodoUrl,todo);
+
+  }
+
+  getTodoCountInCollection(collectionId: number) : Observable<number>
+  {
+    return this.http.get<number>(this.todoCountInCollectionUrl + collectionId);
 
   }
 

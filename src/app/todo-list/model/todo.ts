@@ -5,12 +5,13 @@ export interface Todo {
   id: number;
   title: string;
   description: string;
-  dueDate: string;
+  dueDate: Date;
   completed: boolean;
   category: Category;
   todoCollection: TodoCollection;
-
 }
+
+
 
 
 
