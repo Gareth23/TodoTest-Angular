@@ -26,7 +26,7 @@
       <br>
       <div class="list-group list-group-flush">
 
-        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid &&  newTodoCollection() && f.resetForm();"
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && newTodoCollection(); f.resetForm();"
               class="newTodoCollection-form">
           <div class="row">
             <div class="col-md-10">
@@ -59,8 +59,7 @@
 
         </form>
         <a class="list-group-item list-group-item-action"
-           (click)="getAllTodos()"
-           (click)="selectTodoCollection(null)"
+           (click)="selectTodoCollection(null);"
            [ngClass]="selectedCollectionClass(null)"
         >
           <i class="fa fa-book"></i>&nbsp;All
@@ -89,135 +88,65 @@
     <div class="col-md-9">
       <br>
       <div class="row">
-        <div class="col-md-12">
-
-        </div>
-      </div>
-
-      <div class="row">
         <!-- to do list-->
+        <app-new-todo class="todo-pane"
+                      (refreshTodoEmitter)="refreshTodoCollection()"
+                      [collection]="currentCollection"
+        ></app-new-todo>
+        <div class="list-group list-group-flush todo-pane">
 
-        <div class="list-group list-group-flush"
-             style="width: 98%;">
-          <div class="row">
-            <div class="col-md-10">
-              <div class="dropdown">
-                <input type="text"
-                       class="form-control"
-                       placeholder="Name">
-              </div>
-              <div><br></div>
-            </div>
-            <div class="col-md-2">
-              <button type="button"
-                      [disabled]="currentCollection == null"
-                      class="btn btn-warning pull-right">
-                <i class="fa fa-plus"></i> New Todo
-              </button>
-            </div>
-          </div>
 
           <div class="row headings">
             <h5 class="col-md-6 text-left">Title</h5>
             <h5 class="col-md-2 text-center">Due</h5>
             <h5 class="col-md-2 text-center">Frequency</h5>
-            <h5 class="col-md-2 text-right">Complete</h5>
+            <h5 class="col-md-2 text-left">Complete</h5>
 
           </div>
           <div class="row"
-               *ngFor="let todo of todoList">
+               *ngFor="let todo of getTodoPageList()">
             <a class="list-group-item list-group-item-action"
-               style="width: 100%;"
-               >
+               style="width: 100%;">
               <div class="row">
                 <div class="col-md-6"
-                     (click)="currentTodo = todo.id == currentTodo?.id ? null : todo"
-                >
-                  <i *ngIf="todo.completed==true"
-                     class="fa fa-check-square-o"></i>
-                  <i *ngIf="todo.completed==false"
-                     class="fa fa-square-o"></i>
+                     (click)="currentTodo = todo.id == currentTodo?.id ? null : todo">
+                  <i [ngClass]="getCheckedClass(todo.completed)"></i>
                   {{todo.title}}
+
+                  <i *ngIf="getDateTimeClass(todo).includes('over-due')"
+                     class="fa fa-exclamation-circle over-due"></i>
+                  <i *ngIf="getDateTimeClass(todo).includes('almost-due')"
+                     class="fa fa-exclamation-circle almost-due"></i>
+
                 </div>
                 <div class="col-md-2 text-center ">
                   <span *ngIf="todo.dueDate != null"
-                        class="due-date">
-                        &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDate(todo.dueDate)}}&nbsp;&nbsp;
+                        [ngClass]="getDateTimeClass(todo)">
+                        &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDateTime(todo)}}&nbsp;&nbsp;
                     </span>
                 </div>
                 <div class="col-md-2 text-center">
 
                   <span *ngIf="todo.category != null"
-                        class="due-date">
+                        class="frequency">
                         &nbsp;&nbsp;{{todo.category.name}}&nbsp;&nbsp;
                   </span>
 
                 </div>
                 <div class="col-md-2">
+                  <i class="fa fa-remove pull-right delete-button" (click)="deleteTodo(todo)"></i>
+                  <i class="fa fa-pencil pull-right edit-button"></i>
                   <button [ngClass]="completedClass(todo.completed)"
-                          (click)="todo.completed=!todo.completed"
-                          (click)="updateTodo(todo)"
-                          >
+                          (click)="todo.completed=!todo.completed; updateTodo(todo);">
                     Complete
                   </button>
                 </div>
               </div>
               <div *ngIf="currentTodo?.id == todo.id"
                    class="row">
-                <ul>
-                  <li>
-                    <input type="text"
-                           id="title"
-                           name="title"
-                           class="expanded-input"
-                           placeholder="Title"
-                           required minlength="2"
-                           [ngClass]="{ 'is-invalid': f.submitted && category.invalid}"/>
-                  </li>
-
-                  <li>
-                    <input type="text"
-                           id="category"
-                           name="category"
-                           class="expanded-input"
-                           placeholder="Category"/>
-                  </li>
-                  <li>
-                    <input type="text"
-                           id="dueDate"
-                           name="dueDate"
-                           onfocus="(this.type='date')"
-                           onblur="(this.type='text')"
-                           class="expanded-input"
-                           placeholder="Due Date"
-                           data-date-format="yyyy-MM-dd"
-
-                    />
-                  </li>
-
-                  <li>
-                    <input type="text"
-                           id="description"
-                           name="description"
-                           class="expanded-input"
-                           placeholder="Description"
-                           contenteditable="true"/>
-                  </li>
-
-                </ul>
+                <app-todo-details ></app-todo-details>
               </div>
             </a>
-          </div>
-          <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              Dropdown button
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" href="#">Action</a>
-              <a class="dropdown-item" href="#">Another action</a>
-              <a class="dropdown-item" href="#">Something else here</a>
-            </div>
           </div>
 
         </div>
@@ -225,22 +154,25 @@
           <nav aria-label="...">
             <ul class="pagination">
               <li class="page-item">
-                <a class="page-link" href="#" tabindex="-1">Previous</a>
+                <a class="page-link" (click)="flipPages(-1)">Previous</a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">1</a></li>
-              <li class="page-item active">
-                <a class="page-link" href="#">2 <span class="sr-only">(current)</span></a>
+
+              <li *ngFor=" let num of getPagesNumbers();"
+                  [ngClass]="activePageClass(num)">
+                <a class="page-link"
+                   (click)="setPage(num)">
+                  {{num+1}}
+                </a>
               </li>
-              <li class="page-item"><a class="page-link" href="#">3</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#">Next</a>
+              <li>
+                <a class="page-link"
+                   (click)="flipPages(1)"
+                >Next</a>
               </li>
             </ul>
           </nav>
         </div>
       </div>
-
     </div>
   </div>
 </div>
-

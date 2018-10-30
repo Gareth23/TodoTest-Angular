@@ -3,6 +3,7 @@ import {TodoCollection} from "./model/todo-collection";
 import {Todo} from "./model/todo";
 import {TodoService} from "../shared/todo.service";
 import {TodoCollectionViewModel} from "./viewmodel/todo-collection-view-model";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-todo-list',
@@ -14,8 +15,8 @@ export class TodoListComponent implements OnInit {
   todoList: Todo[] = [];
   currentCollection: TodoCollection;
   currentTodo: Todo;
-  completeTodoList: Todo[] = [];
-  incompleteTodoList: Todo[] = [];
+  pageNumber: number = 0;
+  readonly itemsPerPage: number = 5;
 
   model: TodoCollectionViewModel = {
     collectionName: '',
@@ -27,6 +28,7 @@ export class TodoListComponent implements OnInit {
   ngOnInit() {
     this.getTodoCollections();
     this.getAllTodos();
+    //this.getTodoPageList();
   }
 
   public getTodoCollections() {
@@ -42,11 +44,13 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public getAllTodos() {
+  public getAllTodos(reset: boolean = false) {
 
     this.todoService.getAllTodos().subscribe(
       res => {
         this.todoList = res;
+        if (reset)
+          this.resetPageNumber();
       },
       err => {
         alert("An error has occured getting all Todo's");
@@ -55,11 +59,13 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public getTodosInCollection(collectionId: number) {
+  public getTodosInCollection(collectionId: number, reset: boolean = false) {
 
     this.todoService.getTodosInCollection(collectionId).subscribe(
       res => {
         this.todoList = res;
+        if (reset)
+          this.resetPageNumber();
       },
       err => {
         alert("An error has occured");
@@ -67,39 +73,48 @@ export class TodoListComponent implements OnInit {
     );
   }
 
-  public newTodoCollection() : boolean {
+  public newTodoCollection() {
+
     this.todoService.createNewTodoCollection(this.model).subscribe(
       res => {
         this.todoCollectionList = res;
-        return true;
       },
       err => {
         alert("An error has occured creating a new Collection");
-        return false;
       }
     );
-    return false;
+
   }
 
   public deleteCollection(collectionId: number) {
-    if (confirm("Are you sure you want to delete this collection?"))
+    if (confirm("THIS WILL DELETE ALL TODO's IN THE COLLECTION -> Are you sure you want to delete this collection?"))
+    {
       this.todoService.removeTodoCollection(collectionId).subscribe(
         res => {
           this.getTodoCollections();
+          this.selectTodoCollection(null);
         },
         err => {
           alert("An error has occured deleting Todo Collection");
         }
-      )
+      );
+    }
   }
+
 
   public selectTodoCollection(todoCollection: TodoCollection) {
     this.currentCollection = todoCollection;
 
     if (todoCollection == null)
-      this.getAllTodos();
+      this.getAllTodos(true);
     else
-      this.getTodosInCollection(todoCollection.id);
+      this.getTodosInCollection(todoCollection.id, true);
+
+
+  }
+  private resetPageNumber()
+  {
+    this.pageNumber=0;
   }
 
   public selectedCollectionClass(todoCollection: TodoCollection): any {
@@ -113,10 +128,7 @@ export class TodoListComponent implements OnInit {
   {
     this.todoService.updateTodo(todo).subscribe(
       res => {
-        if (this.currentCollection == null)
-        this.todoList = res;
-        else
-          this.getTodosInCollection(this.currentCollection.id);
+        this.refreshTodoCollection();
       },
       err => {
         alert("An error occured updating Todo");
@@ -129,12 +141,153 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public formatDate(date: Date)
+  public formatDateTime(todo: Todo)
   {
-    const aDate = new Date(date);
-    return aDate.toLocaleDateString('en-ZA');
+    const aDate = new Date(todo.dueDate);
+    if (todo.category == null)
+    {
+      return aDate.toLocaleDateString('en-ZA');
+    }
+    switch (todo.category.name)
+    {
+      case 'Daily':
+        const formattedTime = aDate.toLocaleTimeString('en-za',{hour12: false});
+        return formattedTime.substr(0,formattedTime.lastIndexOf(':'));
+      case 'Weekly':
+        return this.getDayAsString(aDate.getDay());
+      case 'Once':
+        return aDate.toLocaleDateString('en-ZA');
+      default:
+        return aDate.toLocaleDateString('en-ZA');
+    }
   }
 
+  private getDayAsString(day: number)
+  {
+    const weekday = new Array(7);
+    weekday[0] = "Sunday";
+    weekday[1] = "Monday";
+    weekday[2] = "Tuesday";
+    weekday[3] = "Wednesday";
+    weekday[4] = "Thursday";
+    weekday[5] = "Friday";
+    weekday[6] = "Saturday";
+
+    return weekday[day];
+  }
+
+  public getDateTimeClass(todo: Todo)
+  {
+    const almostDue = 'due-date almost-due';
+    const overDue = 'due-date over-due';
+    const notDue = 'due-date';
+    const dateTimeNow = new Date();
+    const dueDate = new Date(todo.dueDate);
+    const difference_ms = (dateTimeNow.getTime()-dueDate.getTime());
+    const difference_weekly = dateTimeNow.getDay()-dueDate.getDay();
+    const difference_daily = dateTimeNow.getHours()-dueDate.getHours() + (dateTimeNow.getMinutes()-dueDate.getMinutes())/60;
+    const oneDay = 1000*60*60*24;
+    let difference = 0;
+    if (todo.dueDate == null || todo.completed == true)
+    {
+      return notDue;
+    }
+    if (todo.category == null )
+    {
+      difference = difference_ms/oneDay;
+    }
+    else
+    {
+      switch (todo.category.name)
+      {
+         case 'Daily':
+           difference = difference_daily;
+           break;
+         case 'Weekly':
+           difference = difference_weekly;
+           break;
+         case 'Once':
+           difference = difference_ms/oneDay;
+      }
+    }
+
+    if (difference >=0)
+      return overDue;
+    else if (difference < 0 && difference > -3)
+      return almostDue;
+    else if (difference <= -3)
+      return notDue;
+  }
+
+  public deleteTodo(todo: Todo) {
+    if (confirm("Are you sure you want to delete this Todo?"))
+    this.todoService.removeTodo(todo.id).subscribe(
+      res => {
+        this.refreshTodoCollection();
+      },
+      err => {
+        alert("An Error occured removing todo: "+ todo.title);
+      }
+    );
+
+  }
+
+  public refreshTodoCollection()
+  {
+    this.getTodoCollections();
+    if (this.currentCollection == null)
+      this.getAllTodos(true);
+    else
+      this.getTodosInCollection(this.currentCollection.id,true);
+  }
+
+  getCheckedClass(completed: boolean) {
+    if (completed)
+      return "fa fa-check-square-o";
+    else
+      return "fa fa-square-o";
+  }
+
+  getTodoPageList() {
+    const startItem = this.pageNumber*(this.itemsPerPage);
+
+    return this.todoList.reverse().slice(startItem,this.itemsPerPage+startItem);
+  }
+
+  setPage(page: number)
+  {
+    this.pageNumber = page;
+  }
+
+  getPagesNumbers() : number[] {
+    const maxPageCount: number = Math.ceil(this.todoList.length/this.itemsPerPage);
+
+    let pageNumbers: number[]=[];
+    for (let i = 0; i < maxPageCount ; i++)
+    {
+      pageNumbers.push(i);
+    }
+    return pageNumbers;
+  }
+
+  flipPages(pages: number) {
+    const maxPageCount: number = Math.ceil(this.todoList.length/this.itemsPerPage)-1;
+    const newPageNumber = this.pageNumber + pages;
+    if (newPageNumber > maxPageCount)
+      this.pageNumber = maxPageCount;
+    else if (newPageNumber < 0)
+      this.pageNumber = 0;
+    else
+      this.pageNumber = newPageNumber;
+
+  }
+
+  activePageClass(page: number) {
+    if ( page == this.pageNumber)
+      return "page-item active";
+    else
+      return "page-item";
+  }
 }
 
 

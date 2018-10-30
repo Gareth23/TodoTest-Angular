@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {HttpClient} from "@angular/common/http";
 import {TodoService} from "../shared/todo.service";
-import {TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
+import {newTodoViewModel, TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
+import {EventListener} from "@angular/core/src/debug/debug_node";
+import {TodoCollection} from "../todo-list/model/todo-collection";
 
 @Component({
   selector: 'app-new-todo',
@@ -10,10 +12,14 @@ import {TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
 })
 export class NewTodoComponent implements OnInit {
 
-  model: TodoViewModel = {
+  @Input() collection : TodoCollection;
+  @Output() refreshTodoEmitter = new EventEmitter();
+
+
+
+  model: newTodoViewModel = {
     title:'',
-    description:'',
-    dueDate:''
+    todoCollection : this.collection
   };
 
   constructor(private todoService: TodoService) { }
@@ -21,18 +27,22 @@ export class NewTodoComponent implements OnInit {
   ngOnInit() {
   }
 
-
-
-  addTodo(): void{
-
+  addTodo(): void
+  {
+    this.model.todoCollection = this.collection;
     this.todoService.createNewTodo(this.model).subscribe(
       res => {
-        location.reload();
+        this.refreshTodoList();
       },
       err => {
         alert("An Error has occurred creating Todo");
       }
     )
+  }
+
+  refreshTodoList ()
+  {
+    this.refreshTodoEmitter.emit();
   }
 
 }

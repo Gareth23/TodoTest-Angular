@@ -2,12 +2,22 @@
   color: red;
 }
 
+.delete-button{
+  padding-top: 4px;
+}
+
+.edit-button{
+  padding-top: 4px;
+}
+
 .delete-button:hover{
   color: red;
+  padding-top: 4px;
 }
 
 .edit-button:hover{
   color: deepskyblue;
+  padding-top-top: 4px;
 }
 
 .btn-sm{
@@ -16,6 +26,13 @@
 
 .navigation{
 
+  position: absolute;
+  top: 500px;
+
+  left: 35%;
+}
+
+.navigation-expanded {
   position: relative;
   top: 40px;
 
@@ -80,18 +97,7 @@
   color: white;
 }
 
-.expanded-input {
-  border-top: none;
-  border-right: none;
-  border-left: none;
-  border-bottom-color: grey;
-  border-bottom-width: thin;
-  margin-top: 4px;
-  margin-left: 40px;
-  background-color: inherit;
-  font-size: smaller;
-  width: fit-content;
-}
+
 
 .headings {
   border : 2px;
@@ -104,8 +110,28 @@ h5 {
 }
 
 .due-date {
-  font-size: 11px;
-  border: 1px solid #17a2b8;
+  font-size: 13px;
   border-radius: 10px;
   width: 200px;
+  color: forestgreen;
 }
+
+.frequency {
+  font-size: 13px;
+  border-radius: 10px;
+  width: 200px;
+
+}
+
+.almost-due {
+  color: darkorange;
+}
+
+.over-due {
+  color: red;
+}
+
+.todo-pane {
+  width: 98%;
+}
+

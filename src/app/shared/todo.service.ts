@@ -4,7 +4,7 @@ import {Todo} from "../todo-list/model/todo";
 import {Observable} from 'rxjs';
 import {TodoCollection} from "../todo-list/model/todo-collection";
 import {TodoCollectionViewModel} from "../todo-list/viewmodel/todo-collection-view-model";
-import {TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
+import {newTodoViewModel, TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -17,6 +17,7 @@ export class TodoService {
   private createTodoCollection = this.rootUrl + "/todocollection/create";
   private allTodoCollectionUrl = this.rootUrl + "/todocollection/all";
   private removeTodoCollectionUrl = this.rootUrl + "/todocollection/remove/";
+  private removeTodoUrl = this.rootUrl + "/todo/remove/";
   private allTodosInCollectionUrl = this.rootUrl + "/todo/incollection/";
   private todoCountInCollectionUrl = this.rootUrl + "/todo/count/";
 
@@ -30,7 +31,7 @@ export class TodoService {
     return this.http.get<Todo[]>(this.allTodoUrl);
   }
 
-  createNewTodo(todo: TodoViewModel) : Observable<any> {
+  createNewTodo(todo: newTodoViewModel) : Observable<any> {
   return this.http.post(this.createTodoUrl,todo);
   }
 
@@ -46,6 +47,11 @@ export class TodoService {
   removeTodoCollection(id: number) : Observable<any>
   {
     return this.http.delete(this.removeTodoCollectionUrl+id);
+  }
+
+  removeTodo(id: number) : Observable<any>
+  {
+    return this.http.delete(this.removeTodoUrl+id);
   }
 
   getTodosInCollection(collectionId: number) : Observable<Todo[]>

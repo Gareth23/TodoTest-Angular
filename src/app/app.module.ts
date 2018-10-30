@@ -11,6 +11,7 @@ import { FormsModule } from "@angular/forms";
 import { HttpClientModule } from "@angular/common/http";
 import { NewTodoComponent } from './new-todo/new-todo.component';
 import { CommonModule } from "@angular/common";
+import { TodoDetailsComponent } from './todo-details/todo-details.component';
 
 const appRoutes : Routes = [
   {
@@ -18,8 +19,8 @@ const appRoutes : Routes = [
     component: TodoListComponent
   },
   {
-    path: '',
-    component: TodoListComponent,
+    path: 'newTodo',
+    component: NewTodoComponent,
     pathMatch: 'full'
   },
   {
@@ -41,7 +42,8 @@ const appRoutes : Routes = [
     NavigationBarComponent,
     TodoListComponent,
     ContactComponent,
-    NewTodoComponent
+    NewTodoComponent,
+    TodoDetailsComponent
   ],
   imports: [
     BrowserModule,
