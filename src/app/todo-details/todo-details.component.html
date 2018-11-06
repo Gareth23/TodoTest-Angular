@@ -1,0 +1,71 @@
+<ul>
+  <li>
+
+    <div class="row">
+
+      <span class="fieldName" >Title:&nbsp;</span>
+      <input type="text"
+             id="title"
+             name="title"
+             class="expanded-input"
+             [(ngModel)]="model.title"
+             (blur)="updateTodoDetail()"
+             placeholder="Title"
+             required minlength="2"
+      />
+
+      <span class="fieldName" >Freq:&nbsp;</span>
+      <select class="select-sm ">
+        <option>test</option>
+        <option>test2</option>
+      </select>
+
+    </div>
+  </li>
+
+  <li>
+    <div class="row">
+
+      <span class="fieldName" >Date:&nbsp;</span>
+      <input type="text"
+             id="dueDate"
+             name="dueDate"
+             onfocus="(this.type='date')"
+             onblur="(this.type='text')"
+             class="expanded-input"
+             [(ngModel)]="dateTime.date"
+             (blur)="updateTodoDetail()"
+             placeholder="yyyy-MM-dd"
+             data-date-format="yyyy-MM-dd"
+      />
+
+      <span class="fieldName" >Time:&nbsp;</span>
+      <input type="text"
+             id="time"
+             name="time"
+             onfocus="this.type='time'"
+             onblur="this.type='text'"
+             class="expanded-input"
+             (blur)="updateTodoDetail()"
+             [(ngModel)]="dateTime.time"
+             placeholder="hh:mm"/>
+
+    </div>
+  </li>
+
+  <li>
+
+    <div class="row">
+      <span class="fieldName" >Desc:&nbsp;</span>
+      <input type="text"
+             id="description"
+             name="description"
+             class="expanded-input"
+             [(ngModel)]="model.description"
+             (blur)="updateTodoDetail()"
+             placeholder="Description"
+             contenteditable="true"/>
+    </div>
+  </li>
+
+</ul>

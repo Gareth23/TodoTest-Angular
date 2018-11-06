@@ -1,0 +1,37 @@
+.invalid-input {
+  color: red;
+}
+
+.expanded-input {
+  border-top: none;
+  border-right: none;
+  border-left: none;
+  border-bottom-color: grey;
+  border-bottom-width: thin;
+  margin-top: 4px;
+  margin-left: 10px;
+  background-color: inherit;
+  font-size: smaller;
+  width: auto;
+}
+
+.select-sm {
+  height: 20px;
+  width: 120px;
+  font-size: x-small;
+  margin-left: 20px;
+  margin-top: 8px;
+  background-color: inherit;
+}
+
+.fieldName {
+  font-size: 12px;
+  color: #17a2b8;
+  margin-left: 13px;
+  margin-top: 4px;
+
+}
+
+
+
+
