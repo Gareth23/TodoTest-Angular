@@ -3,7 +3,6 @@ import {TodoCollection} from "./model/todo-collection";
 import {Todo} from "./model/todo";
 import {TodoService} from "../shared/todo.service";
 import {TodoCollectionViewModel} from "./viewmodel/todo-collection-view-model";
-import {Observable} from "rxjs";
 
 @Component({
   selector: 'app-todo-list',
@@ -17,6 +16,7 @@ export class TodoListComponent implements OnInit {
   currentTodo: Todo;
   pageNumber: number = 0;
   readonly itemsPerPage: number = 5;
+  searchString: string;
 
   model: TodoCollectionViewModel = {
     collectionName: '',
@@ -117,7 +117,7 @@ export class TodoListComponent implements OnInit {
     this.pageNumber=0;
   }
 
-  public selectedCollectionClass(todoCollection: TodoCollection): any {
+  public selectedCollectionClass(todoCollection: TodoCollection): string {
     if (this.currentCollection == todoCollection)
       return "list-group-item list-group-item-dark todo-selected";
     else
@@ -128,7 +128,7 @@ export class TodoListComponent implements OnInit {
   {
     this.todoService.updateTodo(todo).subscribe(
       res => {
-        this.refreshTodoCollection();
+        //this.refreshTodoCollection();
       },
       err => {
         alert("An error occured updating Todo");
@@ -144,11 +144,11 @@ export class TodoListComponent implements OnInit {
   public formatDateTime(todo: Todo)
   {
     const aDate = new Date(todo.dueDate);
-    if (todo.category == null)
+    if (todo.frequency == null)
     {
       return aDate.toLocaleDateString('en-ZA');
     }
-    switch (todo.category.name)
+    switch (todo.frequency.name)
     {
       case 'Daily':
         const formattedTime = aDate.toLocaleTimeString('en-za',{hour12: false});
@@ -192,13 +192,13 @@ export class TodoListComponent implements OnInit {
     {
       return notDue;
     }
-    if (todo.category == null )
+    if (todo.frequency == null )
     {
       difference = difference_ms/oneDay;
     }
     else
     {
-      switch (todo.category.name)
+      switch (todo.frequency.name)
       {
          case 'Daily':
            difference = difference_daily;
@@ -250,8 +250,16 @@ export class TodoListComponent implements OnInit {
 
   getTodoPageList() {
     const startItem = this.pageNumber*(this.itemsPerPage);
+    const filteredTodoList = this.filterTodoList();
+    return filteredTodoList.reverse().slice(startItem,this.itemsPerPage+startItem);
+  }
 
-    return this.todoList.reverse().slice(startItem,this.itemsPerPage+startItem);
+  filterTodoList() : Todo[]
+  {
+    if (this.searchString == null || this.searchString === "")
+      return this.todoList;
+    return this.todoList.filter(s=> s.title.toLowerCase().includes(this.searchString.toLowerCase()) || (
+      s.todoCollection != null && s.todoCollection.collectionName.toLowerCase().includes(this.searchString.toLowerCase())));
   }
 
   setPage(page: number)
@@ -260,7 +268,7 @@ export class TodoListComponent implements OnInit {
   }
 
   getPagesNumbers() : number[] {
-    const maxPageCount: number = Math.ceil(this.todoList.length/this.itemsPerPage);
+    const maxPageCount: number = Math.ceil(this.filterTodoList().length/this.itemsPerPage);
 
     let pageNumbers: number[]=[];
     for (let i = 0; i < maxPageCount ; i++)
@@ -287,6 +295,14 @@ export class TodoListComponent implements OnInit {
       return "page-item active";
     else
       return "page-item";
+  }
+
+  navigationClass() : string {
+    if (this.currentTodo != null)
+    {
+      return 'navigation-expanded';
+    }
+    return 'navigation'
   }
 }
 

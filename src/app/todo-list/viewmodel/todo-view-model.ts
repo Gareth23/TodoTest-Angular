@@ -1,12 +1,16 @@
 import {TodoCollection} from "../model/todo-collection";
+import {Frequency} from "../model/frequency";
 
-export interface TodoViewModel {
+export interface TodoDetailsViewModel {
+  id: number;
   title:string;
+  frequency: Frequency;
+  dueDate: Date;
   description:string;
-  dueDate:string;
+
 }
 
-export interface newTodoViewModel {
+export interface NewTodoViewModel {
   title:string;
   todoCollection: TodoCollection;
 }

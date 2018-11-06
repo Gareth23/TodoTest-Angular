@@ -1,5 +1,5 @@
 import {TodoCollection} from "./todo-collection";
-import {Category} from "./category";
+import {Frequency} from "./frequency";
 
 export interface Todo {
   id: number;
@@ -7,7 +7,7 @@ export interface Todo {
   description: string;
   dueDate: Date;
   completed: boolean;
-  category: Category;
+  frequency: Frequency;
   todoCollection: TodoCollection;
 }
 

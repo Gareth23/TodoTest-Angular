@@ -4,7 +4,7 @@ import {Todo} from "../todo-list/model/todo";
 import {Observable} from 'rxjs';
 import {TodoCollection} from "../todo-list/model/todo-collection";
 import {TodoCollectionViewModel} from "../todo-list/viewmodel/todo-collection-view-model";
-import {newTodoViewModel, TodoViewModel} from "../todo-list/viewmodel/todo-view-model";
+import {NewTodoViewModel, TodoDetailsViewModel} from "../todo-list/viewmodel/todo-view-model";
 
 @Injectable({
   providedIn: 'root'
@@ -19,19 +19,17 @@ export class TodoService {
   private removeTodoCollectionUrl = this.rootUrl + "/todocollection/remove/";
   private removeTodoUrl = this.rootUrl + "/todo/remove/";
   private allTodosInCollectionUrl = this.rootUrl + "/todo/incollection/";
-  private todoCountInCollectionUrl = this.rootUrl + "/todo/count/";
-
+  private updateTodoDetailsUrl = this.rootUrl + "/todo/updatedetails";
 
   constructor(private http: HttpClient) {
 
     }
 
-
    getAllTodos() : Observable<Todo[]>{
     return this.http.get<Todo[]>(this.allTodoUrl);
   }
 
-  createNewTodo(todo: newTodoViewModel) : Observable<any> {
+  createNewTodo(todo: NewTodoViewModel) : Observable<any> {
   return this.http.post(this.createTodoUrl,todo);
   }
 
@@ -65,10 +63,10 @@ export class TodoService {
 
   }
 
-  getTodoCountInCollection(collectionId: number) : Observable<number>
+  updateTodoDetails(todo: TodoDetailsViewModel) : Observable<any>
   {
-    return this.http.get<number>(this.todoCountInCollectionUrl + collectionId);
+
+    return this.http.post(this.updateTodoDetailsUrl,todo);
 
   }
-
 }

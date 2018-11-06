@@ -5,8 +5,9 @@
     <div class="col-md-11">
       <input type="text"
              class="form-control"
+             [(ngModel)]="searchString"
              style="width: 98%;"
-             placeholder="Search Todo Collections...">
+             placeholder="Search Todo's by Category / Title...">
     </div>
     <div class="col-md-1">
       <button type="button"
@@ -18,6 +19,9 @@
 
     </div>
   </div>
+  <div *ngIf="currentCollection != null
+           && searchString != null
+           && searchString != ''" class="alert-warning" >*Note: you are searching in the <b>{{currentCollection.collectionName}}</b> category</div>
 
   <!-- Below Headers -->
   <div class="row" style="margin-top: 28px">
@@ -60,15 +64,12 @@
         </form>
         <a class="list-group-item list-group-item-action"
            (click)="selectTodoCollection(null);"
-           [ngClass]="selectedCollectionClass(null)"
-        >
+           [ngClass]="selectedCollectionClass(null)">
           <i class="fa fa-book"></i>&nbsp;All
         </a>
         <a *ngFor="let todoCollection of todoCollectionList"
-           class="list-group-item list-group-item-action"
            (click)="selectTodoCollection(todoCollection)"
-           [ngClass]="selectedCollectionClass(todoCollection)"
-        >
+           [ngClass]="selectedCollectionClass(todoCollection)">
           <i class="fa fa-pencil-square-o"></i>&nbsp;{{todoCollection.collectionName}}
           ({{todoCollection.collectionCount}})
           <a (click)="deleteCollection(todoCollection.id)">
@@ -104,7 +105,7 @@
 
           </div>
           <div class="row"
-               *ngFor="let todo of getTodoPageList()">
+               *ngFor="let todo of getTodoPageList() | orderByCompleted">
             <a class="list-group-item list-group-item-action"
                style="width: 100%;">
               <div class="row">
@@ -127,9 +128,9 @@
                 </div>
                 <div class="col-md-2 text-center">
 
-                  <span *ngIf="todo.category != null"
+                  <span *ngIf="todo.frequency != null"
                         class="frequency">
-                        &nbsp;&nbsp;{{todo.category.name}}&nbsp;&nbsp;
+                        &nbsp;&nbsp;{{todo.frequency.name}}&nbsp;&nbsp;
                   </span>
 
                 </div>
@@ -144,13 +145,13 @@
               </div>
               <div *ngIf="currentTodo?.id == todo.id"
                    class="row">
-                <app-todo-details ></app-todo-details>
+                <app-todo-details [todo]="currentTodo" (refreshTodoEmitter)="refreshTodoCollection()"></app-todo-details>
               </div>
             </a>
           </div>
 
         </div>
-        <div class="navigation">
+        <div [ngClass]="navigationClass()">
           <nav aria-label="...">
             <ul class="pagination">
               <li class="page-item">

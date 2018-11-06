@@ -5,20 +5,19 @@
 
     <div class="col-md-10">
       <input type="text"
-             id="title2"
+             id="todoTitle"
              class="form-control"
-             placeholder="Name"
-             name="title2"
+             name="todoTitle"
              placeholder="New Todo Title.. "
              [(ngModel)]="model.title"
-             #name="ngModel"
-             [ngClass]="{'is-valid' : f2.submitted && name.invalid}"
+             #title="ngModel"
+             [ngClass]="{'is-invalid' : f2.submitted && title.invalid}"
              required minlength="3"/>
       <!-- Validation errors -->
-      <div *ngIf="f2.submitted && name.invalid" class="invalid-input">
+      <div *ngIf="f2.submitted && title.invalid" class="invalid-input">
         <!-- Name Validation errors -->
-        <div *ngIf="name.errors?.required">*Title is a required field.</div>
-        <div *ngIf="name.errors?.minlength">*Please use a minimum of 3 characters.</div>
+        <div *ngIf="title.errors?.required">*Title is a required field.</div>
+        <div *ngIf="title.errors?.minlength">*Please use a minimum of 3 characters.</div>
       </div>
     </div>
     <div class="col-md-2">
@@ -30,6 +29,9 @@
     </div>
   </div>
 </form>
+  <div *ngIf="collection != null
+           && title != null
+           && title.value !== ''" class="alert-warning" >*Note: the todo will be created <b>{{collection.collectionName}}</b> category</div>
 <br>
 </div>
 

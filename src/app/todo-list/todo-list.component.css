@@ -17,7 +17,7 @@
 
 .edit-button:hover{
   color: deepskyblue;
-  padding-top-top: 4px;
+  padding-top: 4px;
 }
 
 .btn-sm{
@@ -25,17 +25,14 @@
 }
 
 .navigation{
-
-  position: absolute;
-  top: 500px;
-
+  position: relative;
+  top: 40px;
   left: 35%;
 }
 
 .navigation-expanded {
   position: relative;
   top: 40px;
-
   left: 35%;
 }
 
