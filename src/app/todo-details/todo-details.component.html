@@ -8,16 +8,17 @@
              id="title"
              name="title"
              class="expanded-input"
-             [(ngModel)]="model.title"
+             [(ngModel)]="todo.title"
              (blur)="updateTodoDetail()"
              placeholder="Title"
              required minlength="2"
       />
-
       <span class="fieldName" >Freq:&nbsp;</span>
-      <select class="select-sm ">
-        <option>test</option>
-        <option>test2</option>
+
+
+      <select class="select-sm" [(ngModel)]="todo.frequency">
+        <option *ngFor="let frequency of frequencyList" [ngValue]="frequency">{{frequency.name}}</option>
+        <option [ngValue]="null">None</option>
       </select>
 
     </div>
@@ -61,7 +62,7 @@
              id="description"
              name="description"
              class="expanded-input"
-             [(ngModel)]="model.description"
+             [(ngModel)]="todo.description"
              (blur)="updateTodoDetail()"
              placeholder="Description"
              contenteditable="true"/>

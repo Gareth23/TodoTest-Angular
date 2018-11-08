@@ -5,6 +5,7 @@ import {Observable} from 'rxjs';
 import {TodoCollection} from "../todo-list/model/todo-collection";
 import {TodoCollectionViewModel} from "../todo-list/viewmodel/todo-collection-view-model";
 import {NewTodoViewModel, TodoDetailsViewModel} from "../todo-list/viewmodel/todo-view-model";
+import {Frequency} from "../todo-list/model/frequency";
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class TodoService {
   private removeTodoUrl = this.rootUrl + "/todo/remove/";
   private allTodosInCollectionUrl = this.rootUrl + "/todo/incollection/";
   private updateTodoDetailsUrl = this.rootUrl + "/todo/updatedetails";
+  private getAllFrequencyUrl = this.rootUrl + "/frequency/all";
 
   constructor(private http: HttpClient) {
 
@@ -60,13 +62,15 @@ export class TodoService {
 
   updateTodo(todo: Todo) : Observable<Todo[]> {
     return this.http.post<Todo[]>(this.createTodoUrl,todo);
-
   }
 
   updateTodoDetails(todo: TodoDetailsViewModel) : Observable<any>
   {
-
     return this.http.post(this.updateTodoDetailsUrl,todo);
+  }
 
+  getFrequencyList() : Observable<Frequency[]>
+  {
+    return this.http.get<Frequency[]>(this.getAllFrequencyUrl);
   }
 }

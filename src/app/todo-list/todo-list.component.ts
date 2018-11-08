@@ -279,7 +279,7 @@ export class TodoListComponent implements OnInit {
   }
 
   flipPages(pages: number) {
-    const maxPageCount: number = Math.ceil(this.todoList.length/this.itemsPerPage)-1;
+    const maxPageCount: number = Math.ceil(this.filterTodoList().length/this.itemsPerPage)-1;
     const newPageNumber = this.pageNumber + pages;
     if (newPageNumber > maxPageCount)
       this.pageNumber = maxPageCount;

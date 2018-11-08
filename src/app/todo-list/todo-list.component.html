@@ -145,7 +145,7 @@
               </div>
               <div *ngIf="currentTodo?.id == todo.id"
                    class="row">
-                <app-todo-details [todo]="currentTodo" (refreshTodoEmitter)="refreshTodoCollection()"></app-todo-details>
+                <app-todo-details [todo]="currentTodo"></app-todo-details>
               </div>
             </a>
           </div>

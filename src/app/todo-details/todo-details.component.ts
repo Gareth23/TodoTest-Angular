@@ -1,8 +1,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
-import { TodoDetailsViewModel } from "../todo-list/viewmodel/todo-view-model";
 import { TodoService } from "../shared/todo.service";
 import {Todo} from "../todo-list/model/todo";
 import {DateTimeModel} from "../todo-list/model/dateTimeModel";
+import {Frequency} from "../todo-list/model/frequency";
 
 @Component({
   selector: 'app-todo-details',
@@ -11,81 +11,48 @@ import {DateTimeModel} from "../todo-list/model/dateTimeModel";
 })
 export class TodoDetailsComponent implements OnInit {
 
-
-  model: TodoDetailsViewModel = {
-    id: -1,
-    title: '',
-    description: '',
-    frequency: {id:-1,name:''},
-    dueDate: null
-  };
-
   dateTime: DateTimeModel = new DateTimeModel();
-
-  selectedItem: string ='';
+  frequencyList: Frequency[] = [];
 
   @Input() todo : Todo;
-  @Output() refreshTodoEmitter = new EventEmitter();
 
   constructor(private todoService: TodoService) { }
 
   ngOnInit() {
-      this.refreshModel();
-      console.log("refreshed: " + this.todo.id);
+    if (this.todo.dueDate != null && this.todo != null)
+    {
+      this.dateTime.date = new Date(this.todo.dueDate).toLocaleDateString('en-za');
+      this.dateTime.time = new Date(this.todo.dueDate).toLocaleTimeString('en-za');
+    }
+    this.getTodoFrequencyList();
   }
 
   updateTodoDetail () : void
   {
-
-    console.log("date: " + this.dateTime.date);
-    console.log("Time: " + this.dateTime.time);
-
     const combinedDate = this.dateTime.getDateTime();
-    console.log("dueDate"+ combinedDate.toLocaleString("en-za"));
-    this.model.dueDate = combinedDate;
-    this.todoService.updateTodoDetails(this.model).subscribe(
-      res => {
-        this.refreshTodo();
-        this.refreshTodoLocal();
+    console.log("dueDate"+ combinedDate);
 
+    this.todo.dueDate = combinedDate;
+    //this.todo.frequency = this.frequencyList[0];
+    this.todoService.updateTodoDetails(this.todo).subscribe(
+      res => {
       },
       err => {
-
         alert("An Error occured updating todo details");
       }
 
     );
-    console.log("date: " + this.model.dueDate.toLocaleDateString("en-za"));
-    console.log("Time: " + this.model.dueDate.toLocaleTimeString("en-za"));
   }
 
-  refreshTodo ()
+  getTodoFrequencyList () : void
   {
-    this.refreshTodoEmitter.emit();
+    this.todoService.getFrequencyList().subscribe(
+      res => {
+        this.frequencyList = res;
+      },
+      err =>{
+        alert("An Error occured getting the list of frequencies")
+      }
+    );
   }
-
-  private refreshTodoLocal()
-{
-  //this.todo.id = this.model.id  ;
-  this.todo.title = this.model.title ;
-  this.todo.frequency = this.model.frequency;
-  this.todo.description = this.model.description ;
-  this.todo.dueDate = this.model.dueDate ;
-  this.dateTime.date = this.model.dueDate.toLocaleDateString();
-  this.dateTime.time = this.model.dueDate.toLocaleTimeString();
-}
-
-  private refreshModel()
-  {
-    this.model.id = this.todo.id;
-    this.model.title = this.todo.title;
-    this.model.frequency = this.todo.frequency;
-    this.model.description = this.todo.description;
-    this.model.dueDate = this.todo.dueDate;
-
-   //this.dateTime.date = this.todo.dueDate == null ? "" : this.todo.dueDate.toLocaleDateString();
-   //this.dateTime.time = this.todo.dueDate == null ? "" : this.todo.dueDate.toLocaleTimeString();
-    console.log("DateTime: " + this.dateTime.getDateTime())
-  }
-
 }

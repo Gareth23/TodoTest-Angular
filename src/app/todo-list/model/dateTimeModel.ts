@@ -9,14 +9,19 @@ export class DateTimeModel {
   }
 
   public getDateTime(): Date{
-    if (this.date == '' || this.date == null)
+    if ((this.date == '' || this.date == null) && (this.time != '' && this.time != null ))
       this.date = new Date().toLocaleDateString("en-za");
-    if (this.time == '' || this.time == null)
+    if ((this.time == '' || this.time == null) && (this.date != '' && this.date != null ))
       this.time = new Date().toLocaleTimeString("en-za");
 
-    const dateTimeString = this.date + ' ' + this.time;
 
-    return new Date(Date.parse(dateTimeString));
+    const dateTimeString = this.date + ' ' + this.time;
+    const dateTime  = Date.parse(dateTimeString);
+    if (isNaN(dateTime))
+      return null;
+
+    const date = new Date(dateTime);
+    return date;
   }
 
 
