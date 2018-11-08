@@ -32,6 +32,12 @@
 
 }
 
+.description-extended {
+  width: 86%;
+  height: auto;
+  word-break: break-word;
+}
+
 
 
 

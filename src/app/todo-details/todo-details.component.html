@@ -3,7 +3,7 @@
 
     <div class="row">
 
-      <span class="fieldName" >Title:&nbsp;</span>
+      <span class="fieldName">Title:&nbsp;</span>
       <input type="text"
              id="title"
              name="title"
@@ -13,12 +13,12 @@
              placeholder="Title"
              required minlength="2"
       />
-      <span class="fieldName" >Freq:&nbsp;</span>
+      <span class="fieldName">Freq:&nbsp;</span>
 
 
       <select [compareWith]="compareFn" class="select-sm" [(ngModel)]="todo.frequency" (blur)="updateTodoDetail()">
         <option [ngValue]="null">None</option>
-        <option *ngFor="let frequency of frequencyList" [ngValue]="frequency" >{{frequency.name}}</option>
+        <option *ngFor="let frequency of frequencyList" [ngValue]="frequency">{{frequency.name}}</option>
       </select>
 
     </div>
@@ -27,7 +27,7 @@
   <li>
     <div class="row">
 
-      <span class="fieldName" >Date:&nbsp;</span>
+      <span class="fieldName">Date:&nbsp;</span>
       <input type="text"
              id="dueDate"
              name="dueDate"
@@ -40,7 +40,7 @@
              data-date-format="yyyy-MM-dd"
       />
 
-      <span class="fieldName" >Time:&nbsp;</span>
+      <span class="fieldName">Time:&nbsp;</span>
       <input type="text"
              id="time"
              name="time"
@@ -57,15 +57,17 @@
   <li>
 
     <div class="row">
-      <span class="fieldName" >Desc:&nbsp;</span>
-      <input type="text"
+      <span class="fieldName">Desc:&nbsp;</span>
+      <textarea type="text"
              id="description"
+                rows="1"
              name="description"
-             class="expanded-input"
+             class="expanded-input description-extended"
              [(ngModel)]="todo.description"
              (blur)="updateTodoDetail()"
              placeholder="Description"
-             contenteditable="true"/>
+                contenteditable="true"
+            ></textarea>
     </div>
   </li>
 

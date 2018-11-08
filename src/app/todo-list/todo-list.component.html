@@ -20,7 +20,9 @@
   </div>
   <div *ngIf="currentCategory != null
            && searchString != null
-           && searchString != ''" class="alert-warning" >*Note: you are searching in the <b>{{currentCategory.categoryName}}</b> category</div>
+           && searchString != ''" class="alert-warning">*Note: you are searching in the <b>{{currentCategory.categoryName}}</b>
+    category
+  </div>
 
   <!-- Below Headers -->
   <div class="row" style="margin-top: 28px">
@@ -75,7 +77,7 @@
           <a (click)="deleteCategory(todoCategory.id)">
             <i class="fa fa-remove pull-right delete-button"></i>
           </a>
-          <a >
+          <a>
             <i class="fa fa-pencil pull-right edit-button"
                *ngIf="category.contentEditable!='true'"
                (click)="category.contentEditable='true'; category.focus();">
@@ -90,7 +92,6 @@
               <!--  (click)=""> -->&nbsp;
             </i>
           </a>
-
         </a>
       </div>
     </div>
@@ -121,22 +122,20 @@
                style="width: 100%;">
               <div class="row">
                 <div class="col-md-6">
-                  <i [ngClass]="getCheckedClass(todo.completed)"></i>
+                  <i [ngClass]="getCheckedClass(todo.completed)"
+                     (click)="todo.completed=!todo.completed; updateTodo(todo); $event.stopPropagation();"></i>
                   {{todo.title}}
+                </div>
+                <div class="col-md-2 text-center ">
 
+                  <span *ngIf="todo.dueDate != null"
+                        class="due-date">
+                        &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDateTime(todo)}}&nbsp;
+                    </span>
                   <i *ngIf="getDateTimeClass(todo).includes('over-due')"
                      class="fa fa-exclamation-circle over-due"></i>
                   <i *ngIf="getDateTimeClass(todo).includes('almost-due')"
                      class="fa fa-exclamation-circle almost-due"></i>
-
-                </div>
-                <div class="col-md-2 text-center ">
-                  <span *ngIf="todo.dueDate != null"
-                        class="due-date">
-                  <!--[ngClass]="getDateTimeClass(todos)"-->
-
-                        &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDateTime(todo)}}&nbsp;&nbsp;
-                    </span>
                 </div>
                 <div class="col-md-2 text-center">
 
@@ -145,16 +144,19 @@
                         &nbsp;&nbsp;{{todo.frequency.name}}&nbsp;&nbsp;
                   </span>
 
+
                 </div>
                 <div class="col-md-2">
-                  <i class="fa fa-remove pull-right delete-button" (click)="deleteTodo(todo); $event.stopPropagation();"></i>
-                  <i class="fa fa-pencil pull-right edit-button" (click)="$event.stopPropagation();"></i>
+                  <i class="fa fa-remove pull-right delete-button"
+                     (click)="deleteTodo(todo); $event.stopPropagation();"></i>
                   <button [ngClass]="completedClass(todo.completed)"
                           (click)="todo.completed=!todo.completed; updateTodo(todo); $event.stopPropagation();">
                     Complete
                   </button>
                 </div>
+
               </div>
+              <br>
               <div *ngIf="currentTodo?.id == todo.id"
                    class="row">
                 <app-todo-details [todo]="currentTodo" (click)="$event.stopPropagation();"></app-todo-details>
