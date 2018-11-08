@@ -1,7 +1,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
 import {TodoService} from "../shared/todo.service";
 import {NewTodoViewModel} from "../todo-list/viewmodel/todo-view-model";
-import {TodoCollection} from "../todo-list/model/todo-collection";
+import {TodoCategory} from "../todo-list/model/todo-category";
 
 @Component({
   selector: 'app-new-todo',
@@ -10,12 +10,12 @@ import {TodoCollection} from "../todo-list/model/todo-collection";
 })
 export class NewTodoComponent implements OnInit {
 
-  @Input() collection : TodoCollection;
+  @Input() category : TodoCategory;
   @Output() refreshTodoEmitter = new EventEmitter();
 
   model: NewTodoViewModel = {
     title:'',
-    todoCollection : this.collection
+    todoCategory : this.category
   };
 
   constructor(private todoService: TodoService) { }
@@ -25,7 +25,7 @@ export class NewTodoComponent implements OnInit {
 
   addTodo(): void
   {
-    this.model.todoCollection = this.collection;
+    this.model.todoCategory = this.category;
     this.todoService.createNewTodo(this.model).subscribe(
       res => {
         this.refreshTodoList();

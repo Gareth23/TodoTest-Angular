@@ -1,4 +1,4 @@
-import {TodoCollection} from "../model/todo-collection";
+import {TodoCategory} from "../model/todo-category";
 import {Frequency} from "../model/frequency";
 
 export interface TodoDetailsViewModel {
@@ -12,5 +12,5 @@ export interface TodoDetailsViewModel {
 
 export interface NewTodoViewModel {
   title:string;
-  todoCollection: TodoCollection;
+  todoCategory: TodoCategory;
 }

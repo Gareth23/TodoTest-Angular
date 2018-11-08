@@ -16,9 +16,9 @@
       <span class="fieldName" >Freq:&nbsp;</span>
 
 
-      <select class="select-sm" [(ngModel)]="todo.frequency">
-        <option *ngFor="let frequency of frequencyList" [ngValue]="frequency">{{frequency.name}}</option>
+      <select [compareWith]="compareFn" class="select-sm" [(ngModel)]="todo.frequency" (blur)="updateTodoDetail()">
         <option [ngValue]="null">None</option>
+        <option *ngFor="let frequency of frequencyList" [ngValue]="frequency" >{{frequency.name}}</option>
       </select>
 
     </div>

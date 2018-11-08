@@ -12,7 +12,7 @@ export class SearchFilterPipe implements PipeTransform {
       return todoList;
     }
     return todoList.filter(s=> s.title.toLowerCase().includes(searchString.toLowerCase()) || (
-                          s.todoCollection != null && s.todoCollection.collectionName.toLowerCase().includes(searchString.toLowerCase())));
+                          s.todoCategory != null && s.todoCategory.categoryName.toLowerCase().includes(searchString.toLowerCase())));
   }
 
 }

@@ -10,6 +10,15 @@
   padding-top: 4px;
 }
 
+.edit-complete{
+  padding-top: 4px;
+  color: greenyellow;
+}
+
+.edit-complete:hover{
+  color: greenyellow;
+}
+
 .delete-button:hover{
   color: red;
   padding-top: 4px;
@@ -110,6 +119,9 @@ h5 {
   font-size: 13px;
   border-radius: 10px;
   width: 200px;
+}
+
+.not-due{
   color: forestgreen;
 }
 
@@ -132,3 +144,7 @@ h5 {
   width: 98%;
 }
 
+.category-line {
+  word-wrap: break-word;
+  width: fit-content;
+}

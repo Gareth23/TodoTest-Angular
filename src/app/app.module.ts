@@ -19,10 +19,6 @@ const appRoutes : Routes = [
   {
     path: 'todoList',
     component: TodoListComponent
-  },
-  {
-    path: 'contact',
-    component: ContactComponent
   }
   ,
   {

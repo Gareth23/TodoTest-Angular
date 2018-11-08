@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import {TodoCollection} from "./model/todo-collection";
+import {TodoCategory} from "./model/todo-category";
 import {Todo} from "./model/todo";
 import {TodoService} from "../shared/todo.service";
-import {TodoCollectionViewModel} from "./viewmodel/todo-collection-view-model";
+import {TodoCategoryViewModel} from "./viewmodel/todo-category-view-model";
 
 @Component({
   selector: 'app-todo-list',
@@ -10,35 +10,35 @@ import {TodoCollectionViewModel} from "./viewmodel/todo-collection-view-model";
   styleUrls: ['./todo-list.component.css']
 })
 export class TodoListComponent implements OnInit {
-  todoCollectionList: TodoCollection[] = [];
+  todoCategoryList: TodoCategory[] = [];
   todoList: Todo[] = [];
-  currentCollection: TodoCollection;
+  currentCategory: TodoCategory;
   currentTodo: Todo;
   pageNumber: number = 0;
   readonly itemsPerPage: number = 5;
   searchString: string;
 
-  model: TodoCollectionViewModel = {
-    collectionName: '',
+  model: TodoCategoryViewModel = {
+    categoryName: '',
   };
 
   constructor(private todoService: TodoService) {
   }
 
   ngOnInit() {
-    this.getTodoCollections();
+    this.getTodoCategories();
     this.getAllTodos();
     //this.getTodoPageList();
   }
 
-  public getTodoCollections() {
+  public getTodoCategories() {
 
-    this.todoService.getAllTodoCollections().subscribe(
+    this.todoService.getAllTodoCategories().subscribe(
       res => {
-        this.todoCollectionList = res;
+        this.todoCategoryList = res;
       },
       err => {
-        alert("An error has occured getting all Todo Collections");
+        alert("An error has occured getting all Todo Categories");
       }
     );
 
@@ -59,56 +59,56 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public getTodosInCollection(collectionId: number, reset: boolean = false) {
+  public getTodosInCategory(categoryId: number, reset: boolean = false) {
 
-    this.todoService.getTodosInCollection(collectionId).subscribe(
+    this.todoService.getTodosInCategory(categoryId).subscribe(
       res => {
         this.todoList = res;
         if (reset)
           this.resetPageNumber();
       },
       err => {
-        alert("An error has occured");
+        alert("An error has occured getting Todo's");
       }
     );
   }
 
-  public newTodoCollection() {
+  public newTodoCategory() {
 
-    this.todoService.createNewTodoCollection(this.model).subscribe(
+    this.todoService.createNewTodoCategory(this.model).subscribe(
       res => {
-        this.todoCollectionList = res;
+        this.todoCategoryList = res;
       },
       err => {
-        alert("An error has occured creating a new Collection");
+        alert("An error has occured creating a new Category");
       }
     );
 
   }
 
-  public deleteCollection(collectionId: number) {
-    if (confirm("THIS WILL DELETE ALL TODO's IN THE COLLECTION -> Are you sure you want to delete this collection?"))
+  public deleteCategory(categoryId: number) {
+    if (confirm("THIS WILL DELETE ALL TODO's IN THE CATEGORY -> Are you sure you want to delete this category?"))
     {
-      this.todoService.removeTodoCollection(collectionId).subscribe(
+      this.todoService.removeTodoCategory(categoryId).subscribe(
         res => {
-          this.getTodoCollections();
-          this.selectTodoCollection(null);
+          this.getTodoCategories();
+          this.selectTodoCategory(null);
         },
         err => {
-          alert("An error has occured deleting Todo Collection");
+          alert("An error has occured deleting Todo Category");
         }
       );
     }
   }
 
 
-  public selectTodoCollection(todoCollection: TodoCollection) {
-    this.currentCollection = todoCollection;
+  public selectTodoCategory(todoCategory: TodoCategory) {
+    this.currentCategory = todoCategory;
 
-    if (todoCollection == null)
+    if (todoCategory == null)
       this.getAllTodos(true);
     else
-      this.getTodosInCollection(todoCollection.id, true);
+      this.getTodosInCategory(todoCategory.id, true);
 
 
   }
@@ -117,8 +117,8 @@ export class TodoListComponent implements OnInit {
     this.pageNumber=0;
   }
 
-  public selectedCollectionClass(todoCollection: TodoCollection): string {
-    if (this.currentCollection == todoCollection)
+  public selectedCategoryClass(todoCategory: TodoCategory): string {
+    if (this.currentCategory == todoCategory)
       return "list-group-item list-group-item-dark todo-selected";
     else
       return "list-group-item list-group-item-action";
@@ -128,7 +128,7 @@ export class TodoListComponent implements OnInit {
   {
     this.todoService.updateTodo(todo).subscribe(
       res => {
-        //this.refreshTodoCollection();
+        //this.refreshTodoCategory();
       },
       err => {
         alert("An error occured updating Todo");
@@ -148,6 +148,7 @@ export class TodoListComponent implements OnInit {
     {
       return aDate.toLocaleDateString('en-ZA');
     }
+
     switch (todo.frequency.name)
     {
       case 'Daily':
@@ -157,9 +158,35 @@ export class TodoListComponent implements OnInit {
         return this.getDayAsString(aDate.getDay());
       case 'Once':
         return aDate.toLocaleDateString('en-ZA');
+      case 'Monthly':
+        return this.getDayOfMonth(aDate.getDate());
       default:
         return aDate.toLocaleDateString('en-ZA');
     }
+  }
+
+  private getDayOfMonth(day: number) {
+    switch (day%100)
+    {
+      case 11:
+      case 12:
+      case 13:
+        return day + 'th';
+    }
+
+    switch (day%10)
+    {
+      case 1:
+        return day + 'st';
+      case 2:
+        return day + 'nd';
+      case 3:
+        return day + 'rd';
+      default:
+        return day + 'th'
+
+    }
+
   }
 
   private getDayAsString(day: number)
@@ -180,21 +207,24 @@ export class TodoListComponent implements OnInit {
   {
     const almostDue = 'due-date almost-due';
     const overDue = 'due-date over-due';
-    const notDue = 'due-date';
+    const notDue = 'due-date not-due';
     const dateTimeNow = new Date();
     const dueDate = new Date(todo.dueDate);
     const difference_ms = (dateTimeNow.getTime()-dueDate.getTime());
     const difference_weekly = dateTimeNow.getDay()-dueDate.getDay();
     const difference_daily = dateTimeNow.getHours()-dueDate.getHours() + (dateTimeNow.getMinutes()-dueDate.getMinutes())/60;
+    const difference_monthly = dateTimeNow.getDate()-dueDate.getDate();
+
+    const almostDueVariance = 3;
     const oneDay = 1000*60*60*24;
     let difference = 0;
     if (todo.dueDate == null || todo.completed == true)
     {
-      return notDue;
+      return 'due-date not-due';
     }
     if (todo.frequency == null )
     {
-      difference = difference_ms/oneDay;
+      return 'due-date';
     }
     else
     {
@@ -208,12 +238,15 @@ export class TodoListComponent implements OnInit {
            break;
          case 'Once':
            difference = difference_ms/oneDay;
+           break;
+        case 'Monthly':
+           difference = difference_monthly;
       }
     }
 
     if (difference >=0)
       return overDue;
-    else if (difference < 0 && difference > -3)
+    else if (difference < 0 && difference > -almostDueVariance)
       return almostDue;
     else if (difference <= -3)
       return notDue;
@@ -223,7 +256,7 @@ export class TodoListComponent implements OnInit {
     if (confirm("Are you sure you want to delete this Todo?"))
     this.todoService.removeTodo(todo.id).subscribe(
       res => {
-        this.refreshTodoCollection();
+        this.refreshTodoCategory();
       },
       err => {
         alert("An Error occured removing todo: "+ todo.title);
@@ -232,13 +265,14 @@ export class TodoListComponent implements OnInit {
 
   }
 
-  public refreshTodoCollection()
+  public refreshTodoCategory()
   {
-    this.getTodoCollections();
-    if (this.currentCollection == null)
+    console.log("refresh");
+    this.getTodoCategories();
+    if (this.currentCategory == null)
       this.getAllTodos(true);
     else
-      this.getTodosInCollection(this.currentCollection.id,true);
+      this.getTodosInCategory(this.currentCategory.id,true);
   }
 
   getCheckedClass(completed: boolean) {
@@ -249,9 +283,20 @@ export class TodoListComponent implements OnInit {
   }
 
   getTodoPageList() {
+
+    this.normalisePageNumber();
     const startItem = this.pageNumber*(this.itemsPerPage);
     const filteredTodoList = this.filterTodoList();
+
     return filteredTodoList.reverse().slice(startItem,this.itemsPerPage+startItem);
+  }
+
+  private normalisePageNumber() {
+    const maxPageCount: number = Math.ceil(this.filterTodoList().length/this.itemsPerPage)-1;
+    if (this.pageNumber > maxPageCount)
+      this.pageNumber = maxPageCount;
+    if (this.pageNumber < 0)
+      this.pageNumber = 0;
   }
 
   filterTodoList() : Todo[]
@@ -259,7 +304,7 @@ export class TodoListComponent implements OnInit {
     if (this.searchString == null || this.searchString === "")
       return this.todoList;
     return this.todoList.filter(s=> s.title.toLowerCase().includes(this.searchString.toLowerCase()) || (
-      s.todoCollection != null && s.todoCollection.collectionName.toLowerCase().includes(this.searchString.toLowerCase())));
+      s.todoCategory != null && s.todoCategory.categoryName.toLowerCase().includes(this.searchString.toLowerCase())));
   }
 
   setPage(page: number)
@@ -269,7 +314,6 @@ export class TodoListComponent implements OnInit {
 
   getPagesNumbers() : number[] {
     const maxPageCount: number = Math.ceil(this.filterTodoList().length/this.itemsPerPage);
-
     let pageNumbers: number[]=[];
     for (let i = 0; i < maxPageCount ; i++)
     {
@@ -279,14 +323,9 @@ export class TodoListComponent implements OnInit {
   }
 
   flipPages(pages: number) {
-    const maxPageCount: number = Math.ceil(this.filterTodoList().length/this.itemsPerPage)-1;
-    const newPageNumber = this.pageNumber + pages;
-    if (newPageNumber > maxPageCount)
-      this.pageNumber = maxPageCount;
-    else if (newPageNumber < 0)
-      this.pageNumber = 0;
-    else
-      this.pageNumber = newPageNumber;
+
+    this.pageNumber = this.pageNumber + pages;
+    this.normalisePageNumber();
 
   }
 
@@ -303,6 +342,19 @@ export class TodoListComponent implements OnInit {
       return 'navigation-expanded';
     }
     return 'navigation'
+  }
+
+  updateCategory(todoCategory: string) {
+    this.currentCategory.categoryName = todoCategory;
+    console.log(this.currentCategory.categoryName);
+    this.todoService.updateCategory(this.currentCategory).subscribe(
+      res => {
+
+      },
+      err => {
+
+      }
+    );
   }
 }
 

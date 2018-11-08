@@ -11,7 +11,6 @@
     </div>
     <div class="col-md-1">
       <button type="button"
-              (click)="newTodoCollection()"
               class="btn btn-info pull-right">
 
         <i class="fa fa-search"></i> Search
@@ -19,34 +18,34 @@
 
     </div>
   </div>
-  <div *ngIf="currentCollection != null
+  <div *ngIf="currentCategory != null
            && searchString != null
-           && searchString != ''" class="alert-warning" >*Note: you are searching in the <b>{{currentCollection.collectionName}}</b> category</div>
+           && searchString != ''" class="alert-warning" >*Note: you are searching in the <b>{{currentCategory.categoryName}}</b> category</div>
 
   <!-- Below Headers -->
   <div class="row" style="margin-top: 28px">
-    <!-- Collection Pane; -->
+    <!-- Category Pane; -->
     <div class="col-md-3">
       <br>
       <div class="list-group list-group-flush">
 
-        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && newTodoCollection(); f.resetForm();"
-              class="newTodoCollection-form">
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && newTodoCategory(); f.resetForm();"
+              class="newTodoCategory-form">
           <div class="row">
             <div class="col-md-10">
               <input type="text"
-                     id="collectionName"
-                     name="collectionName"
+                     id="categoryName"
+                     name="categoryName"
                      class="form-control"
                      style="width: 100%;"
-                     placeholder="New Collection.."
-                     [(ngModel)]="model.collectionName"
+                     placeholder="New Category.."
+                     [(ngModel)]="model.categoryName"
                      #name="ngModel"
                      required minlength="2"
-                     [ngClass]="{ 'is-invalid': f.submitted && name.invalid}"
+                     [ngClass]="{ 'is-valid': f.submitted && name.invalid}"
               />
               <!-- Validation errors -->
-              <div *ngIf="f.submitted && name.invalid" class="invalid-input">
+              <div *ngIf="f.submitted && name.invalid" class="alert-warning">
                 <!-- Name Validation errors -->
                 <div *ngIf="name.errors?.required">*This is a required field.</div>
                 <div *ngIf="name.errors?.minlength">*Please use a minimum of 2 characters.</div>
@@ -63,20 +62,31 @@
 
         </form>
         <a class="list-group-item list-group-item-action"
-           (click)="selectTodoCollection(null);"
-           [ngClass]="selectedCollectionClass(null)">
+           (click)="selectTodoCategory(null);"
+           [ngClass]="selectedCategoryClass(null)">
           <i class="fa fa-book"></i>&nbsp;All
         </a>
-        <a *ngFor="let todoCollection of todoCollectionList"
-           (click)="selectTodoCollection(todoCollection)"
-           [ngClass]="selectedCollectionClass(todoCollection)">
-          <i class="fa fa-pencil-square-o"></i>&nbsp;{{todoCollection.collectionName}}
-          ({{todoCollection.collectionCount}})
-          <a (click)="deleteCollection(todoCollection.id)">
+        <a *ngFor="let todoCategory of todoCategoryList"
+           (click)="selectTodoCategory(todoCategory);"
+           [ngClass]="selectedCategoryClass(todoCategory)">
+          <i class="fa fa-pencil-square-o "></i>&nbsp;
+          <span #category class="category-line">{{todoCategory.categoryName}}</span>
+          ({{todoCategory.categoryCount}})
+          <a (click)="deleteCategory(todoCategory.id)">
             <i class="fa fa-remove pull-right delete-button"></i>
           </a>
-          <a>
-            <i class="fa fa-pencil pull-right edit-button">
+          <a >
+            <i class="fa fa-pencil pull-right edit-button"
+               *ngIf="category.contentEditable!='true'"
+               (click)="category.contentEditable='true'; category.focus();">
+              <!--  (click)=""> -->&nbsp;
+            </i>
+            <i class="fa fa-check edit-complete pull-right "
+               *ngIf="category.contentEditable=='true'"
+               (click)="category.textContent = category.textContent;
+                        updateCategory(category.textContent);
+                        category.contentEditable=!category.contentEditable;
+                        selectTodoCategory(todoCategory);">
               <!--  (click)=""> -->&nbsp;
             </i>
           </a>
@@ -91,8 +101,8 @@
       <div class="row">
         <!-- to do list-->
         <app-new-todo class="todo-pane"
-                      (refreshTodoEmitter)="refreshTodoCollection()"
-                      [collection]="currentCollection"
+                      (refreshTodoEmitter)="refreshTodoCategory()"
+                      [category]="currentCategory"
         ></app-new-todo>
         <div class="list-group list-group-flush todo-pane">
 
@@ -105,12 +115,12 @@
 
           </div>
           <div class="row"
-               *ngFor="let todo of getTodoPageList() | orderByCompleted">
+               *ngFor="let todo of getTodoPageList() | orderByCompleted"
+               (click)="currentTodo = todo.id == currentTodo?.id ? null : todo; ">
             <a class="list-group-item list-group-item-action"
                style="width: 100%;">
               <div class="row">
-                <div class="col-md-6"
-                     (click)="currentTodo = todo.id == currentTodo?.id ? null : todo">
+                <div class="col-md-6">
                   <i [ngClass]="getCheckedClass(todo.completed)"></i>
                   {{todo.title}}
 
@@ -122,7 +132,9 @@
                 </div>
                 <div class="col-md-2 text-center ">
                   <span *ngIf="todo.dueDate != null"
-                        [ngClass]="getDateTimeClass(todo)">
+                        class="due-date">
+                  <!--[ngClass]="getDateTimeClass(todos)"-->
+
                         &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDateTime(todo)}}&nbsp;&nbsp;
                     </span>
                 </div>
@@ -135,17 +147,17 @@
 
                 </div>
                 <div class="col-md-2">
-                  <i class="fa fa-remove pull-right delete-button" (click)="deleteTodo(todo)"></i>
-                  <i class="fa fa-pencil pull-right edit-button"></i>
+                  <i class="fa fa-remove pull-right delete-button" (click)="deleteTodo(todo); $event.stopPropagation();"></i>
+                  <i class="fa fa-pencil pull-right edit-button" (click)="$event.stopPropagation();"></i>
                   <button [ngClass]="completedClass(todo.completed)"
-                          (click)="todo.completed=!todo.completed; updateTodo(todo);">
+                          (click)="todo.completed=!todo.completed; updateTodo(todo); $event.stopPropagation();">
                     Complete
                   </button>
                 </div>
               </div>
               <div *ngIf="currentTodo?.id == todo.id"
                    class="row">
-                <app-todo-details [todo]="currentTodo"></app-todo-details>
+                <app-todo-details [todo]="currentTodo" (click)="$event.stopPropagation();"></app-todo-details>
               </div>
             </a>
           </div>

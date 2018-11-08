@@ -29,9 +29,9 @@
     </div>
   </div>
 </form>
-  <div *ngIf="collection != null
+  <div *ngIf="category != null
            && title != null
-           && title.value !== ''" class="alert-warning" >*Note: the todo will be created <b>{{collection.collectionName}}</b> category</div>
+           && title.value !== ''" class="alert-warning" >*Note: the todo will be created in the <b>{{category.categoryName}}</b> category</div>
 <br>
 </div>
 

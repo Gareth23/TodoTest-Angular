@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, Input, OnInit} from '@angular/core';
 import { TodoService } from "../shared/todo.service";
 import {Todo} from "../todo-list/model/todo";
 import {DateTimeModel} from "../todo-list/model/dateTimeModel";
@@ -29,11 +29,8 @@ export class TodoDetailsComponent implements OnInit {
 
   updateTodoDetail () : void
   {
-    const combinedDate = this.dateTime.getDateTime();
-    console.log("dueDate"+ combinedDate);
 
-    this.todo.dueDate = combinedDate;
-    //this.todo.frequency = this.frequencyList[0];
+    this.todo.dueDate = this.dateTime.getDateTime();
     this.todoService.updateTodoDetails(this.todo).subscribe(
       res => {
       },
@@ -54,5 +51,14 @@ export class TodoDetailsComponent implements OnInit {
         alert("An Error occured getting the list of frequencies")
       }
     );
+  }
+
+  compareFn(f1: Frequency, f2: Frequency)
+  {
+    if (f1 == null || f2 == null) {
+      return f2 == null;
+    }
+
+    return f1.name === f2.name;
   }
 }
