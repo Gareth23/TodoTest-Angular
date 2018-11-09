@@ -1,6 +1,6 @@
 <div>
 
-<form name="form" #f2="ngForm" (ngSubmit)="f2.form.valid && addTodo();  f2.resetForm();" novalidate class="new-todo-form">
+<form name="form" #s="ngForm" (ngSubmit)="s.form.valid && addTodo() &&  s.resetForm();" novalidate class="new-todo-form">
   <div class="row">
 
     <div class="col-md-10">
@@ -11,10 +11,10 @@
              placeholder="New Todo Title.. "
              [(ngModel)]="model.title"
              #title="ngModel"
-             [ngClass]="{'is-invalid' : f2.submitted && title.invalid}"
+             [ngClass]="{'is-invalid' : s.submitted && title.invalid}"
              required minlength="3"/>
       <!-- Validation errors -->
-      <div *ngIf="f2.submitted && title.invalid" class="invalid-input">
+      <div *ngIf="s.submitted && title.invalid " class="invalid-input">
         <!-- Name Validation errors -->
         <div *ngIf="title.errors?.required">*Title is a required field.</div>
         <div *ngIf="title.errors?.minlength">*Please use a minimum of 3 characters.</div>

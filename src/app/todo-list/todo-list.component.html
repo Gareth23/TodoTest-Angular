@@ -31,7 +31,7 @@
       <br>
       <div class="list-group list-group-flush">
 
-        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && newTodoCategory(); f.resetForm();"
+        <form name="form" #f="ngForm" (ngSubmit)="f.form.valid && newTodoCategory() && f.resetForm()"
               class="newTodoCategory-form">
           <div class="row">
             <div class="col-md-10">
@@ -44,10 +44,10 @@
                      [(ngModel)]="model.categoryName"
                      #name="ngModel"
                      required minlength="2"
-                     [ngClass]="{ 'is-valid': f.submitted && name.invalid}"
+                     [ngClass]="{ 'is-invalid': f.submitted && name.invalid}"
               />
               <!-- Validation errors -->
-              <div *ngIf="f.submitted && name.invalid" class="alert-warning">
+              <div *ngIf="f.submitted && name.invalid" class="invalid-input">
                 <!-- Name Validation errors -->
                 <div *ngIf="name.errors?.required">*This is a required field.</div>
                 <div *ngIf="name.errors?.minlength">*Please use a minimum of 2 characters.</div>
@@ -61,7 +61,6 @@
               </button>
             </div>
           </div>
-
         </form>
         <a class="list-group-item list-group-item-action"
            (click)="selectTodoCategory(null);"
@@ -81,7 +80,6 @@
             <i class="fa fa-pencil pull-right edit-button"
                *ngIf="category.contentEditable!='true'"
                (click)="category.contentEditable='true'; category.focus();">
-              <!--  (click)=""> -->&nbsp;
             </i>
             <i class="fa fa-check edit-complete pull-right "
                *ngIf="category.contentEditable=='true'"
@@ -89,7 +87,6 @@
                         updateCategory(category.textContent);
                         category.contentEditable=!category.contentEditable;
                         selectTodoCategory(todoCategory);">
-              <!--  (click)=""> -->&nbsp;
             </i>
           </a>
         </a>
@@ -100,20 +97,16 @@
     <div class="col-md-9">
       <br>
       <div class="row">
-        <!-- to do list-->
         <app-new-todo class="todo-pane"
                       (refreshTodoEmitter)="refreshTodoCategory()"
                       [category]="currentCategory"
         ></app-new-todo>
         <div class="list-group list-group-flush todo-pane">
-
-
           <div class="row headings">
             <h5 class="col-md-6 text-left">Title</h5>
             <h5 class="col-md-2 text-center">Due</h5>
             <h5 class="col-md-2 text-center">Frequency</h5>
             <h5 class="col-md-2 text-left">Complete</h5>
-
           </div>
           <div class="row"
                *ngFor="let todo of getTodoPageList() | orderByCompleted"
@@ -127,7 +120,6 @@
                   {{todo.title}}
                 </div>
                 <div class="col-md-2 text-center ">
-
                   <span *ngIf="todo.dueDate != null"
                         class="due-date">
                         &nbsp;&nbsp;{{todo.dueDate == null ? "" : formatDateTime(todo)}}&nbsp;
@@ -138,13 +130,10 @@
                      class="fa fa-exclamation-circle almost-due"></i>
                 </div>
                 <div class="col-md-2 text-center">
-
                   <span *ngIf="todo.frequency != null"
                         class="frequency">
                         &nbsp;&nbsp;{{todo.frequency.name}}&nbsp;&nbsp;
                   </span>
-
-
                 </div>
                 <div class="col-md-2">
                   <i class="fa fa-remove pull-right delete-button"

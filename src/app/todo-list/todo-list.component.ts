@@ -73,7 +73,8 @@ export class TodoListComponent implements OnInit {
     );
   }
 
-  public newTodoCategory() {
+  public newTodoCategory(): boolean
+  {
 
     this.todoService.createNewTodoCategory(this.model).subscribe(
       res => {
@@ -83,7 +84,7 @@ export class TodoListComponent implements OnInit {
         alert("An error has occured creating a new Category");
       }
     );
-
+    return true;
   }
 
   public deleteCategory(categoryId: number) {

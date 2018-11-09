@@ -23,7 +23,7 @@ export class NewTodoComponent implements OnInit {
   ngOnInit() {
   }
 
-  addTodo(): void
+  addTodo(): boolean
   {
     this.model.todoCategory = this.category;
     this.todoService.createNewTodo(this.model).subscribe(
@@ -34,6 +34,7 @@ export class NewTodoComponent implements OnInit {
         alert("An Error has occurred creating Todo");
       }
     );
+    return true;
   }
 
   refreshTodoList ()
